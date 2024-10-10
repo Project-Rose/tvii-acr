@@ -1,36 +1,44 @@
-import config from "./config.json" with { type: 'json' };
+import { Application, Router } from "@oak/oak";
+import config from "./config/config.json" with { type: "json" };
+import { bold, brightBlue } from "@std/fmt/colors"
+const port = config.http.port
+const app = new Application();
+const router = new Router();
 
-const handler = async (req: Request): Promise<Response | void> => {
-  if (req.method === "CONNECT") {
-    const [hostname, port] = req.url.split(":");
+router.all("/connect/:hostname/:port", async (context) => {
+  const { hostname, port } = context.params;
 
+  if (context.request.method === "CONNECT") {
     try {
       const conn = await Deno.connect({ hostname, port: Number(port) });
-      const { conn: clientConn, r: clientReader, w: clientWriter } = req;
+      const clientConn = context.request.conn;
+      
+      const clientReader = clientConn.readable.getReader();
+      const clientWriter = clientConn.writable.getWriter();
 
-      await req.respond({ status: 200, body: "Connection Established" });
+      context.response.status = 200;
+      context.response.body = "Connection Established";
 
       await Promise.all([
-        await copy(clientReader, conn),
-        await copy(conn, clientWriter),
+        clientReader.read().then(({ value }) => conn.write(value)),
+        conn.readable.getReader().read().then(({ value }) => clientWriter.write(value)),
       ]);
 
       clientConn.close();
       conn.close();
     } catch (err) {
       console.error(`Failed to connect to ${hostname}:${port}`, err);
-      return new Response("Bad Gateway", { status: 502 });
+      context.response.status = 502;
+      context.response.body = "Bad Gateway";
     }
   } else {
-    return new Response("Unsupported method", { status: 405 });
+    context.response.status = 405;
+    context.response.body = "Unsupported method";
   }
-};
+});
 
-// Start the server
-Deno.serve(
-  {
-    port: config.port,
-    hostname: "0.0.0.0",
-  },
-  handler
-);
+app.use(router.routes());
+app.use(router.allowedMethods());
+
+app.listen({ hostname: "0.0.0.0", port: port });
+console.log(bold(brightBlue(`TVii-ACR is running on port ${port}`)));
