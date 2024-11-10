@@ -1,0 +1,14 @@
+{
+  "name": "tvii-acr",
+  "module": "index.ts",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@oak/oak": "npm:@jsr/oak__oak",
+    "@std/fmt": "npm:@jsr/std__fmt"
+  }
+}
