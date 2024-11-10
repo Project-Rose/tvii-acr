@@ -1,14 +1,24 @@
 {
   "name": "tvii-acr",
-  "module": "index.ts",
-  "devDependencies": {
-    "@types/bun": "latest"
+  "version": "1.0.0",
+  "description": "ACR (Voice recognition) module for Nintendo TVii. ",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "node index.js"
   },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Project-Rose/tvii-acr.git"
   },
+  "author": "Miguel, Skye, ItzSwirlz, David Joaq",
+  "license": "AGPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/Project-Rose/tvii-acr/issues"
+  },
+  "homepage": "https://github.com/Project-Rose/tvii-acr#readme",
   "dependencies": {
-    "@oak/oak": "npm:@jsr/oak__oak",
-    "@std/fmt": "npm:@jsr/std__fmt"
+    "chalk": "^5.3.0",
+    "express": "^4.21.1"
   }
 }
